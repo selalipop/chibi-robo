@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { procedure, router } from '../trpc';
 import { generateSuggestionsForImage } from './suggestionGenerator';
 import { generateSceneImages } from './objectImageGenerator';
+import { fakeImageGenerator } from './stubImageGenerator';
 export const appRouter = router({
   getImageSuggestions: procedure
     .input(
@@ -33,12 +34,40 @@ export const appRouter = router({
         sceneDescription: z.string(),
       }),
     )
-    .mutation(async function* (opts) {
-      const { imageBase64, sceneDescription } = opts.input;
-      
-      // Use the new generateSceneImages function
-      for await (const result of generateSceneImages(imageBase64, sceneDescription)) {
-        yield result;
+    .mutation(async function* () {
+      console.log("generating scene images");
+      // Have gemini generate X prompts, one for each image
+      const prompts = ["",""]
+      const images = prompts.map(async (prompt, index) => {
+        return await fakeImageGenerator(`/object_${index + 1}.jpg`,index + 1)
+      });
+      console.log("images", images);
+      yield{
+        event: 'prompts_generated',
+        data: prompts,
+      }
+      // Yield images as they are generated
+      for await (const image of images) {
+        console.log("generated image", image);
+        yield {
+          event: 'created_image',
+          data: image,
+        }
+      }
+
+      yield{
+        event: 'all_images_created',
+      }
+      // Generate composite image using generated images
+      const compositeImage = ""
+      // Generate composite image
+      yield{
+        event: 'composite_image_created',
+        data: compositeImage,
+      }
+
+      return {
+        event :'finished'
       }
     }),
 });
