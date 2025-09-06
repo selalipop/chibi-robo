@@ -78,9 +78,10 @@ export default function Home() {
         for await (const event of data) {
           console.log("event", event);
           if (event.event === "created_image") {
+            const imageData = event.data as any;
             setSceneImages((prev) => [
               ...prev,
-              { image: event.data, id: event.id },
+              { image: imageData.imageData, id: imageData.id },
             ]);
           }
           if (event.event === "mesh_generated") {

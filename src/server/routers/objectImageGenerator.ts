@@ -1,6 +1,8 @@
 import { generate_3d_printable_prompt, generate_product_photoshoot_scene_prompt } from '../../utils/prompts';
 import { GoogleGenAI } from '@google/genai';
 import { fal } from '@fal-ai/client';
+import { SceneGenerationResult } from './SceneGenerationResult';
+import { SceneAnalysis } from './SceneAnalysis';
 
 // Initialize Gemini client - gets API key from GEMINI_API_KEY environment variable
 const ai = new GoogleGenAI({ 
@@ -11,35 +13,6 @@ const ai = new GoogleGenAI({
 // Define models
 const GEMINI_PRO_MODEL = 'gemini-2.5-pro';
 const GEMINI_FLASH_MODEL = 'gemini-2.5-flash-image-preview';
-
-// Types for structured output
-interface SceneAnalysis {
-  sceneOverview: string;
-  identifiedObjects: string[];
-  generationPrompts: {
-    objectName: string;
-    prompt: string;
-  }[];
-}
-
-interface GeneratedImage {
-  objectName: string;
-  imageData: string; // base64 data URI
-  prompt: string;
-  id: number;
-}
-
-interface GeneratedMesh {
-  objectName: string;
-  meshUrl: string;
-  imageData: string; // base64 data URI
-  id: number;
-}
-
-interface SceneGenerationResult {
-  event: 'created_image' | 'all_images_created' | 'mesh_generated' | 'composite_image_created' | 'finished';
-  data?: GeneratedImage | GeneratedMesh | string;
-}
 
 // Step 1: Analyze scene with Gemini 2.5 Pro
 async function analyzeSceneWithGemini(imageBase64: string): Promise<SceneAnalysis> {
