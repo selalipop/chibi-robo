@@ -60,7 +60,7 @@ export const appRouter = router({
       }
       const meshes = images.map(async (image, index) => {
         return {
-          mesh: await fakeMeshGenerator(`/mesh${index + 1}.glb`,index + 1),
+          mesh: await fakeMeshGenerator(`/mesh_${index + 1}.glb`,index + 1),
           id: index,
         }
       });

@@ -2,7 +2,7 @@ export function fakeImageGenerator(fakeImageUrl: string,delay: number) : Promise
    return new Promise((resolve) => {
         setTimeout(() => {
             resolve(fakeImageUrl);
-        }, 5000 * delay);
+        }, 1000 * delay);
     });
 }
 
@@ -10,6 +10,6 @@ export function fakeMeshGenerator(fakeImageUrl: string,delay: number) : Promise<
     return new Promise((resolve) => {
          setTimeout(() => {
              resolve(fakeImageUrl);
-         }, 5000 * delay);
+         }, 1000 * delay);
      });
  }
