@@ -4,9 +4,15 @@ import { fal } from '@fal-ai/client';
 import { SceneGenerationResult } from './SceneGenerationResult';
 import { SceneAnalysis } from './SceneAnalysis';
 
+// Ensure environment variables are loaded
+if (typeof window === 'undefined') {
+  // Server-side only
+  require('dotenv').config({ path: '.env.local' });
+}
+
 // Initialize Gemini client - gets API key from GEMINI_API_KEY environment variable
 const ai = new GoogleGenAI({ 
-  apiKey: `AIzaSyB9SK7xgp4KrqxvX0-2rvvYaeMECSi9Sj4`,
+  apiKey: process.env.GEMINI_API_KEY!,
   vertexai: false
 });
 
@@ -87,7 +93,7 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
 // Step 4: Generate mesh with FAL AI
 async function generateMeshWithFAL(imageData: string, objectName: string): Promise<string> {
   fal.config({
-    credentials: "4a3100fd-a69a-41db-96dc-33a00f6cefc7:d23ffb3f84aac3f290656ce45371fc39"
+    credentials: process.env.FAL_API_KEY!
   });
   const result = await fal.subscribe("fal-ai/hunyuan3d/v2", {
     input: {
