@@ -1,4 +1,4 @@
-const generate_3d_printable_prompt = `Analyze the provided photo and create a Chibi-style 3D printable figurine scene.
+export const generate_3d_printable_prompt = `Analyze the provided photo and create a Chibi-style 3D printable figurine scene.
 
 Instructions:
 Identify the PRIMARY subjects that would work as standalone figurines (maximum 5)
@@ -35,7 +35,7 @@ Ignore:
 - Plants, trees, decorative elements
 - Any objects that would be too thin or fragile when printed`;
 
-const generate_product_photoshoot_scene_prompt = `Generate a product photoshoot in the style of these reference objects, arrange them so that they reflect the reference scene
+export const generate_product_photoshoot_scene_prompt = `Generate a product photoshoot in the style of these reference objects, arrange them so that they reflect the reference scene
 <reference>
 The photo shows a man, likely a sound technician, sitting behind a large audio mixing console and working on a laptop. He is focused on his task, with a microphone positioned near him.
 </reference>
