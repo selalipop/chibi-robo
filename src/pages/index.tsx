@@ -12,6 +12,23 @@ enum WizardState {
   GeneratingSceneImages,
 }
 
+function Placeholder() {
+  return <motion.div
+    className="h-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center animate-pulse"
+    animate={{
+      opacity: [0.3, 0.7, 0.3],
+    }}
+    transition={{
+      opacity: {
+        duration: 1.5,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }
+    }}
+  >
+  </motion.div>;
+}
+
 export default function Home() {
   const suggestions = trpc.getImageSuggestions.useMutation();
   const generateSceneImages = trpc.getSceneImages.useMutation();
@@ -58,47 +75,50 @@ export default function Home() {
         {wizardState === WizardState.GeneratingSceneImages && (
           <motion.div 
             key="scene-images"
-            className="fixed inset-0 flex items-center justify-start pl-8"
+            className="fixed inset-0 flex items-center justify-center px-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.3 }}
           >
-            <div className="relative h-[50vh] bg-green-300 w-full">
-              <AnimatePresence>
-                {sceneImages.map((image, index) => (
-                  <motion.img 
-                    key={image} 
-                    src={image} 
-                    alt="Scene Image" 
-                    className="absolute h-full w-auto object-contain bg-red-200" 
-                    style={{
-                      top: `0`,
-                      left: `${index * 200}px`,
-                      zIndex: index
-                    }}
-                    initial={{ 
-                      opacity: 0, 
-                      scale: 0.3,
-                      y: 100,
-                      rotate: -15
-                    }}
-                    animate={{ 
-                      opacity: 1, 
-                      scale: 1,
-                      y: 0,
-                      rotate: 0
-                    }}
-                    transition={{ 
-                      duration: 0.6,
-                      delay: index * 0.2,
-                      ease: "easeOut",
-                      type: "spring",
-                      stiffness: 100,
-                      damping: 15
-                    }}
-                  />
-                ))}
-              </AnimatePresence>
+            <div className="flex h-[50vh] w-full justify-center gap-4">
+              {[0, 1].map((index) => (
+                <div key={index} className="flex-1 max-w-[calc(50%-8px)] h-full relative">
+                  {/* Pulsating placeholder */}
+                  {!sceneImages[index] &&<Placeholder />}
+                  
+                  {/* Actual image */}
+                  <AnimatePresence>
+                    {sceneImages[index] && (
+                      <motion.img 
+                        key={sceneImages[index]} 
+                        src={sceneImages[index]} 
+                        alt={`Scene Image ${index + 1}`} 
+                        className="absolute inset-0 aspect-square h-full object-contain animate-[wiggle_1s_ease-in-out_infinite] rounded-3xl border-8 border-white"
+                        initial={{ 
+                          opacity: 0, 
+                          scale: 0.3,
+                          y: 100,
+                          rotate: -15
+                        }}
+                        animate={{ 
+                          opacity: 1, 
+                          scale: 1,
+                          y: 0,
+                          rotate: 0
+                        }}
+                        transition={{ 
+                          duration: 0.6,
+                          delay: 0.1,
+                          ease: "easeOut",
+                          type: "spring",
+                          stiffness: 100,
+                          damping: 15
+                        }}
+                      />
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
             </div>
           </motion.div>
         )}

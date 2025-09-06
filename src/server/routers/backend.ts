@@ -59,7 +59,7 @@ export const appRouter = router({
         event: 'all_images_created',
       }
       // Generate composite image using generated images
-      const compositeImage = ""
+      const compositeImage = "/image"
       // Generate composite image
       yield{
         event: 'composite_image_created',
