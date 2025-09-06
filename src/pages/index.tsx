@@ -79,18 +79,18 @@ export default function Home() {
         {wizardState === WizardState.GeneratingSceneImages && (
           <motion.div
             key="scene-images"
-            className="fixed inset-0 flex items-center justify-center px-8"
+            className="fixed inset-0 flex items-center justify-center-safe px-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.3 }}
           >
-            <div className="flex h-[50vh] w-full justify-center gap-4">
+            <div className="flex h-[50vh] w-full justify-center items-center gap-4 bg-red-200">
               {prompts.map((_, index) => {
                 const image = sceneImages[index];
                 return (
                   <div
                     key={index}
-                    className="flex-1 max-w-[calc(50%-8px)] h-full relative"
+                    className="flex-1 aspect-square h-full relative items-center justify-center flex"
                   >
                     {/* Pulsating placeholder */}
                     {!image && <Placeholder />}
@@ -98,11 +98,9 @@ export default function Home() {
                     {/* Actual image */}
                     <AnimatePresence>
                       {image && (
-                        <motion.img
+                        <motion.div
                           key={image}
-                          src={image}
-                          alt={`Scene Image ${index + 1}`}
-                          className="absolute inset-0 aspect-square h-full object-contain animate-[wiggle_1s_ease-in-out_infinite] rounded-3xl border-8 border-white"
+                          className=" inset-0 aspect-square h-full animate-[wiggle_1s_ease-in-out_infinite] rounded-3xl"
                           initial={{
                             opacity: 0,
                             scale: 0.3,
@@ -123,7 +121,13 @@ export default function Home() {
                             stiffness: 100,
                             damping: 15,
                           }}
-                        />
+                        >
+                          <img
+                            src={image}
+                            alt={`Scene Image ${index + 1}`}
+                            className="aspect-square h-full object-contain border-8 border-blue-50 rounded-3xl"
+                          />
+                        </motion.div>
                       )}
                     </AnimatePresence>
                   </div>
