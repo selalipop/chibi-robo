@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { procedure, router } from '../trpc';
 import { generateSuggestionsForImage } from './suggestionGenerator';
 import { generateSceneImages } from './objectImageGenerator';
-import { fakeImageGenerator } from './stubImageGenerator';
+import { fakeImageGenerator, fakeMeshGenerator } from './stubImageGenerator';
 export const appRouter = router({
   getImageSuggestions: procedure
     .input(
@@ -39,7 +39,10 @@ export const appRouter = router({
       // Have gemini generate X prompts, one for each image
       const prompts = ["",""]
       const images = prompts.map(async (prompt, index) => {
-        return await fakeImageGenerator(`/object_${index + 1}.jpg`,index + 1)
+        return {
+          image: await fakeImageGenerator(`/object_${index + 1}.jpg`,index + 1),
+          id: index,
+        }
       });
       console.log("images", images);
       yield{
@@ -51,10 +54,24 @@ export const appRouter = router({
         console.log("generated image", image);
         yield {
           event: 'created_image',
-          data: image,
+          data: image.image,
+          id: image.id,
         }
       }
-
+      const meshes = images.map(async (image, index) => {
+        return {
+          mesh: await fakeMeshGenerator(`/mesh${index + 1}.glb`,index + 1),
+          id: index,
+        }
+      });
+      for await (const mesh of meshes) {
+        console.log("generated mesh", mesh);
+        yield {
+          event: 'mesh_generated',
+          data: mesh.mesh,
+          id: mesh.id,
+        }
+      }
       yield{
         event: 'all_images_created',
       }

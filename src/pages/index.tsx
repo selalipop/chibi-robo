@@ -79,61 +79,115 @@ export default function Home() {
         {wizardState === WizardState.GeneratingSceneImages && (
           <motion.div
             key="scene-images"
-            className="fixed inset-0 flex items-center justify-center-safe px-8"
+            className="fixed inset-0 flex items-center justify-center px-4 sm:px-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.3 }}
           >
-            <div className="flex h-[50vh] w-full justify-center items-center gap-4 bg-red-200">
+            <motion.div 
+              className="flex w-full max-w-7xl justify-center items-center gap-2 sm:gap-4"
+              style={{ 
+                height: `min(50vh, ${100 / (prompts.length + (prompts.length === sceneImages.length ? 1 : 0) + prompts.length - 1)}vw)` 
+              }}
+              layout
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+            >
               {prompts.map((_, index) => {
                 const image = sceneImages[index];
                 return (
-                  <div
-                    key={index}
-                    className="flex-1 aspect-square h-full relative items-center justify-center flex"
-                  >
-                    {/* Pulsating placeholder */}
-                    {!image && <Placeholder />}
+                  <>
+                    <motion.div
+                      key={index}
+                      className="aspect-square relative flex items-center justify-center"
+                      style={{ 
+                        height: '100%',
+                        width: `min(50vh, ${100 / (prompts.length + (prompts.length === sceneImages.length ? 1 : 0) + prompts.length - 1)}vw)`
+                      }}
+                      layout
+                      transition={{ duration: 0.5, ease: "easeInOut" }}
+                    >
+                      {/* Pulsating placeholder */}
+                      {!image && <Placeholder />}
 
-                    {/* Actual image */}
-                    <AnimatePresence>
-                      {image && (
-                        <motion.div
-                          key={image}
-                          className=" inset-0 aspect-square h-full animate-[wiggle_1s_ease-in-out_infinite] rounded-3xl"
-                          initial={{
-                            opacity: 0,
-                            scale: 0.3,
-                            y: 100,
-                            rotate: -15,
-                          }}
-                          animate={{
-                            opacity: 1,
-                            scale: 1,
-                            y: 0,
-                            rotate: 0,
-                          }}
-                          transition={{
-                            duration: 0.6,
-                            delay: 0.1,
-                            ease: "easeOut",
-                            type: "spring",
-                            stiffness: 100,
-                            damping: 15,
-                          }}
-                        >
-                          <img
-                            src={image}
-                            alt={`Scene Image ${index + 1}`}
-                            className="aspect-square h-full object-contain border-8 border-blue-50 rounded-3xl"
-                          />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                      {/* Actual image */}
+                      <AnimatePresence>
+                        {image && (
+                          <motion.div
+                            key={image}
+                            className="absolute inset-0 aspect-square animate-[wiggle_1s_ease-in-out_infinite] rounded-3xl"
+                            initial={{
+                              opacity: 0,
+                              scale: 0.3,
+                              y: 100,
+                              rotate: -15,
+                            }}
+                            animate={{
+                              opacity: 1,
+                              scale: 1,
+                              y: 0,
+                              rotate: 0,
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              delay: 0.1,
+                              ease: "easeOut",
+                              type: "spring",
+                              stiffness: 100,
+                              damping: 15,
+                            }}
+                          >
+                            <img
+                              src={image}
+                              alt={`Scene Image ${index + 1}`}
+                              className="w-full h-full object-contain border-4 sm:border-8 border-blue-50 rounded-3xl"
+                            />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
+                    
+                    {/* Show + signs between images, = sign after last image when all are loaded */}
+                    {index < prompts.length - 1 && (
+                      <motion.div 
+                        className="flex items-center justify-center text-3xl sm:text-6xl font-bold text-gray-600 flex-shrink-0"
+                        layout
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                      >
+                        +
+                      </motion.div>
+                    )}
+                    {index === prompts.length - 1 && prompts.length === sceneImages.length && (
+                      <motion.div 
+                        className="flex items-center justify-center text-3xl sm:text-6xl font-bold text-gray-600 flex-shrink-0"
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ duration: 0.6, ease: "easeOut", type: "spring" }}
+                        layout
+                      >
+                        =
+                      </motion.div>
+                    )}
+                  </>
                 );
               })}
-            </div>
+              
+              {/* Composite image placeholder/result */}
+              {prompts.length === sceneImages.length && prompts.length > 0 && (
+                <motion.div 
+                  className="aspect-square relative flex items-center justify-center"
+                  style={{ 
+                    height: '100%',
+                    width: `min(50vh, ${100 / (prompts.length + 1 + prompts.length - 1)}vw)`
+                  }}
+                  initial={{ scale: 0, x: 50 }}
+                  animate={{ scale: 1, x: 0 }}
+                  transition={{ duration: 0.8, ease: "easeOut", type: "spring" }}
+                  layout
+                >
+                  <Placeholder />
+                </motion.div>
+              )}
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
