@@ -137,16 +137,34 @@ async function generateMeshWithFAL(imageData: string, objectName: string): Promi
 
 // Step 5: Generate final composite scene
 async function generateCompositeScene(imageDataArray: string[], sceneDescription: string): Promise<string> {
-  // For now, we'll generate a simple composite scene using the first image
-  // In a more sophisticated implementation, you might want to use a different approach
-  // that can handle multiple images for composition
-  
+  // Convert base64 data URIs to buffers for the API
+  const imageBuffers = imageDataArray.map(imageData => {
+    const base64Data = imageData.replace('data:image/png;base64,', '');
+    return Buffer.from(base64Data, 'base64');
+  });
+
   const prompt = `${generate_product_photoshoot_scene_prompt}\n\nScene description: ${sceneDescription}\n\nGenerate a product photoshoot scene with chibi figurines.`;
+
+  // Create contents array with images and prompt
+  const contents = [
+    ...imageBuffers.map(buffer => ({
+      inlineData: {
+        data: buffer.toString('base64'),
+        mimeType: 'image/png'
+      }
+    })),
+    prompt
+  ];
 
   const response = await ai.models.generateContent({
     model: GEMINI_FLASH_MODEL,
-    contents: prompt,
+    contents: contents,
+    config: {
+      responseModalities: ['IMAGE']
+    }
   });
+  
+  console.log('Composite response attributes:', JSON.stringify(response, null, 2));
   
   // Handle multiple images - use the last one
   if (!response.candidates || response.candidates.length === 0) {
