@@ -3,7 +3,9 @@ import { GoogleGenAI } from '@google/genai';
 import { fal } from '@fal-ai/client';
 
 // Initialize Gemini client - gets API key from GEMINI_API_KEY environment variable
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ 
+  apiKey: process.env.GEMINI_API_KEY
+});
 
 // Define models
 const GEMINI_PRO_MODEL = 'gemini-2.5-pro';
