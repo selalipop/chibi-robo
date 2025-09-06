@@ -4,7 +4,8 @@ import { fal } from '@fal-ai/client';
 
 // Initialize Gemini client - gets API key from GEMINI_API_KEY environment variable
 const ai = new GoogleGenAI({ 
-  apiKey: process.env.GEMINI_API_KEY
+  apiKey: `AIzaSyB9SK7xgp4KrqxvX0-2rvvYaeMECSi9Sj4`,
+  vertexai: false
 });
 
 // Define models
@@ -80,9 +81,6 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
   const response = await ai.models.generateContent({
     model: GEMINI_FLASH_MODEL,
     contents: prompt,
-    config: {
-      responseMimeType: "image/png"
-    }
   });
 
   // Handle multiple images - use the last one
@@ -111,26 +109,11 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
   return `data:image/png;base64,${lastImageData}`;
 }
 
-// Helper function to write base64 data to temporary file if needed
-async function writeTempFile(imageBase64: string, objectName: string): Promise<string> {
-  const fs = require('fs');
-  const path = require('path');
-  const os = require('os');
-  
-  const timestamp = Date.now();
-  const filename = `${objectName}_${timestamp}.png`;
-  const tempPath = path.join(os.tmpdir(), filename);
-  
-  // Convert base64 to buffer and write to temp file
-  const imageData = imageBase64.replace('data:image/png;base64,', '');
-  const buffer = Buffer.from(imageData, 'base64');
-  fs.writeFileSync(tempPath, buffer);
-  
-  return tempPath;
-}
-
 // Step 4: Generate mesh with FAL AI
 async function generateMeshWithFAL(imageData: string, objectName: string): Promise<string> {
+  fal.config({
+    credentials: "4a3100fd-a69a-41db-96dc-33a00f6cefc7:d23ffb3f84aac3f290656ce45371fc39"
+  });
   const result = await fal.subscribe("fal-ai/hunyuan3d/v2", {
     input: {
       input_image_url: imageData // FAL accepts data URI directly
@@ -163,9 +146,6 @@ async function generateCompositeScene(imageDataArray: string[], sceneDescription
   const response = await ai.models.generateContent({
     model: GEMINI_FLASH_MODEL,
     contents: prompt,
-    config: {
-      responseMimeType: "image/png"
-    }
   });
   
   // Handle multiple images - use the last one

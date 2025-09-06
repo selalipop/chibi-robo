@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import dotenv from 'dotenv';
 import { generateSceneImages } from './src/server/routers/objectImageGenerator';
+import { GoogleGenAI } from "@google/genai";
 
 // Load environment variables from .env.local
 dotenv.config({ path: '.env.local' });
