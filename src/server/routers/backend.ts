@@ -18,7 +18,7 @@ export const appRouter = router({
         })),
       }),
     )
-    .query(async (opts) => {
+    .mutation(async (opts) => {
       const imageBase64 = opts.input.imageBase64;
       const suggestions = await generateSuggestionsForImage(imageBase64, opts.input.numSuggestions);
       return {
@@ -32,7 +32,7 @@ export const appRouter = router({
         sceneDescription: z.string(),
       }),
     )
-    .query(async function* () {
+    .mutation(async function* () {
       // Have gemini generate X prompts, one for each image
       const prompts = [""]
       const images = prompts.map(async (prompt) => {
