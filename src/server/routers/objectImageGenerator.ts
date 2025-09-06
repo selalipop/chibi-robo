@@ -121,15 +121,20 @@ async function generateCompositeScene(imageDataArray: string[], sceneDescription
   const prompt = `${generate_product_photoshoot_scene_prompt}\n\nScene description: ${sceneDescription}\n\nGenerate a product photoshoot scene with chibi figurines.`;
 
   // Create contents array with images and prompt
-  const contents = [
-    ...imageBuffers.map(buffer => ({
-      inlineData: {
-        data: buffer.toString('base64'),
-        mimeType: 'image/png'
+  const contents = [{
+    parts: [
+      ...imageBuffers.map(buffer => ({
+        inlineData: {
+          data: buffer.toString('base64'),
+          mimeType: 'image/png'
+        }
+      })),
+      // Then add the text prompt
+      {
+        text: prompt
       }
-    })),
-    prompt
-  ];
+    ]
+  }];
 
   const response = await ai.models.generateContent({
     model: GEMINI_FLASH_MODEL,
