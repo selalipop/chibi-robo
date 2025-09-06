@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { procedure, router } from '../trpc';
+import { generateSuggestionsForImage } from './suggestionGenerator';
 export const appRouter = router({
   getImageSuggestions: procedure
     .input(
@@ -17,21 +18,11 @@ export const appRouter = router({
         })),
       }),
     )
-    .query((opts) => {
+    .query(async (opts) => {
       const imageBase64 = opts.input.imageBase64;
+      const suggestions = await generateSuggestionsForImage(imageBase64, opts.input.numSuggestions);
       return {
-        suggestions: [
-          {
-            funHook: 'Party at the beach!',
-            detailedDescription: 'We\'re having a party at the beach!',
-            isRecommended: true,
-          },
-          {
-            funHook: 'Office party', //Prompt model for more fun names
-            detailedDescription: 'We\'re having an office party!',
-            isRecommended: true,
-          },
-        ],
+        suggestions: suggestions,
       };
     }),
   getSceneImages: procedure

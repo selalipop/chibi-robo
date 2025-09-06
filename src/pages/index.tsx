@@ -1,7 +1,7 @@
 import { trpc } from '../utils/trpc';
 
 export default function Home() {
-  const hello = trpc.submitImage.useQuery({ text: 'client' });
+  const hello = trpc.getImageSuggestions.useQuery({ imageBase64: '', numSuggestions: 10 });
   if (!hello.data) {
     return <div>Loading...</div>;
   }
