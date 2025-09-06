@@ -13,20 +13,21 @@ enum WizardState {
 }
 
 function Placeholder() {
-  return <motion.div
-    className="h-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center animate-pulse"
-    animate={{
-      opacity: [0.3, 0.7, 0.3],
-    }}
-    transition={{
-      opacity: {
-        duration: 1.5,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }}
-  >
-  </motion.div>;
+  return (
+    <motion.div
+      className="h-full aspect-square bg-gray-200 rounded-lg flex items-center justify-center animate-pulse"
+      animate={{
+        opacity: [0.3, 0.7, 0.3],
+      }}
+      transition={{
+        opacity: {
+          duration: 1.5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        },
+      }}
+    ></motion.div>
+  );
 }
 
 export default function Home() {
@@ -49,7 +50,7 @@ export default function Home() {
           if (event.event === "created_image") {
             setSceneImages((prev) => [...prev, event.data]);
           }
-          if( event.event === "prompts_generated") {
+          if (event.event === "prompts_generated") {
             setPrompts(event.data);
           }
         }
@@ -62,18 +63,21 @@ export default function Home() {
           <motion.div
             key="camera"
             initial={{ scale: 1, opacity: 1 }}
-            exit={{ 
-              scale: 0.8, 
+            exit={{
+              scale: 0.8,
               opacity: 0,
               x: -1000,
-              transition: { duration: 0.6, ease: "easeInOut" }
+              transition: { duration: 0.6, ease: "easeInOut" },
             }}
           >
-            <CameraView ref={cameraViewRef} onImageCapture={handleImageCapture} />
+            <CameraView
+              ref={cameraViewRef}
+              onImageCapture={handleImageCapture}
+            />
           </motion.div>
         )}
         {wizardState === WizardState.GeneratingSceneImages && (
-          <motion.div 
+          <motion.div
             key="scene-images"
             className="fixed inset-0 flex items-center justify-center px-8"
             initial={{ opacity: 0 }}
@@ -81,44 +85,50 @@ export default function Home() {
             transition={{ duration: 0.3, delay: 0.3 }}
           >
             <div className="flex h-[50vh] w-full justify-center gap-4">
-              {[0, 1].map((index) => (
-                <div key={index} className="flex-1 max-w-[calc(50%-8px)] h-full relative">
-                  {/* Pulsating placeholder */}
-                  {!sceneImages[index] &&<Placeholder />}
-                  
-                  {/* Actual image */}
-                  <AnimatePresence>
-                    {sceneImages[index] && (
-                      <motion.img 
-                        key={sceneImages[index]} 
-                        src={sceneImages[index]} 
-                        alt={`Scene Image ${index + 1}`} 
-                        className="absolute inset-0 aspect-square h-full object-contain animate-[wiggle_1s_ease-in-out_infinite] rounded-3xl border-8 border-white"
-                        initial={{ 
-                          opacity: 0, 
-                          scale: 0.3,
-                          y: 100,
-                          rotate: -15
-                        }}
-                        animate={{ 
-                          opacity: 1, 
-                          scale: 1,
-                          y: 0,
-                          rotate: 0
-                        }}
-                        transition={{ 
-                          duration: 0.6,
-                          delay: 0.1,
-                          ease: "easeOut",
-                          type: "spring",
-                          stiffness: 100,
-                          damping: 15
-                        }}
-                      />
-                    )}
-                  </AnimatePresence>
-                </div>
-              ))}
+              {prompts.map((_, index) => {
+                const image = sceneImages[index];
+                return (
+                  <div
+                    key={index}
+                    className="flex-1 max-w-[calc(50%-8px)] h-full relative"
+                  >
+                    {/* Pulsating placeholder */}
+                    {!image && <Placeholder />}
+
+                    {/* Actual image */}
+                    <AnimatePresence>
+                      {image && (
+                        <motion.img
+                          key={image}
+                          src={image}
+                          alt={`Scene Image ${index + 1}`}
+                          className="absolute inset-0 aspect-square h-full object-contain animate-[wiggle_1s_ease-in-out_infinite] rounded-3xl border-8 border-white"
+                          initial={{
+                            opacity: 0,
+                            scale: 0.3,
+                            y: 100,
+                            rotate: -15,
+                          }}
+                          animate={{
+                            opacity: 1,
+                            scale: 1,
+                            y: 0,
+                            rotate: 0,
+                          }}
+                          transition={{
+                            duration: 0.6,
+                            delay: 0.1,
+                            ease: "easeOut",
+                            type: "spring",
+                            stiffness: 100,
+                            damping: 15,
+                          }}
+                        />
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
             </div>
           </motion.div>
         )}
