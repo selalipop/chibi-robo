@@ -34,57 +34,9 @@ export const appRouter = router({
         sceneDescription: z.string(),
       }),
     )
-    .mutation(async function* () {
-      console.log("generating scene images");
-      // Have gemini generate X prompts, one for each image
-      const prompts = ["",""]
-      const images = prompts.map(async (prompt, index) => {
-        return {
-          image: await fakeImageGenerator(`/object_${index + 1}.jpg`,index + 1),
-          id: index,
-        }
-      });
-      console.log("images", images);
-      yield{
-        event: 'prompts_generated',
-        data: prompts,
-      }
-      // Yield images as they are generated
-      for await (const image of images) {
-        console.log("generated image", image);
-        yield {
-          event: 'created_image',
-          data: image.image,
-          id: image.id,
-        }
-      }
-      const meshes = images.map(async (image, index) => {
-        return {
-          mesh: await fakeMeshGenerator(`/mesh_${index + 1}.glb`,index + 1),
-          id: index,
-        }
-      });
-      for await (const mesh of meshes) {
-        console.log("generated mesh", mesh);
-        yield {
-          event: 'mesh_generated',
-          data: mesh.mesh,
-          id: mesh.id,
-        }
-      }
-      yield{
-        event: 'all_images_created',
-      }
-      // Generate composite image using generated images
-      const compositeImage = "/composite_image.jpg"
-      const compositeImageBase64 = await fakeImageGenerator(compositeImage,1)
-      yield{
-        event: 'composite_image_created',
-        data: compositeImageBase64,
-      }
-
-      return {
-        event :'finished'
+    .mutation(async function* ({input}) {
+      for await (const event of generateSceneImages(input.imageBase64, input.sceneDescription)) {
+        yield event;
       }
     }),
 });

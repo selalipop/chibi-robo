@@ -26,12 +26,14 @@ interface GeneratedImage {
   objectName: string;
   imageData: string; // base64 data URI
   prompt: string;
+  id: number;
 }
 
 interface GeneratedMesh {
   objectName: string;
   meshUrl: string;
   imageData: string; // base64 data URI
+  id: number;
 }
 
 interface SceneGenerationResult {
@@ -202,12 +204,13 @@ export async function* generateSceneImages(
     const sceneAnalysis = await analyzeSceneWithGemini(imageBase64);
     
     // Step 2: Generate images for each object
-    const imagePromises = sceneAnalysis.generationPrompts.map(async (obj) => {
+    const imagePromises = sceneAnalysis.generationPrompts.map(async (obj, index) => {
       const imageData = await generateImageWithGemini(obj.prompt);
       return {
         objectName: obj.objectName,
         imageData,
-        prompt: obj.prompt
+        prompt: obj.prompt,
+        id: index
       };
     });
 
@@ -216,7 +219,7 @@ export async function* generateSceneImages(
       const image = await imagePromise;
       yield {
         event: 'created_image',
-        data: image
+        data: image,
       };
     }
 
@@ -231,7 +234,8 @@ export async function* generateSceneImages(
       return {
         objectName: image.objectName,
         meshUrl,
-        imageData: image.imageData
+        imageData: image.imageData,
+        id: image.id
       };
     });
 
